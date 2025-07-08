@@ -41,10 +41,10 @@ describe('PomodoroTimer', () => {
       expect(computedStyle.color).toBe('rgb(34, 139, 34)'); // forestgreen
     });
 
-    it('displays initial time of 03:30', () => {
+    it('displays initial time of 00:00', () => {
       renderWithChakra(<PomodoroTimer />);
       const timer = screen.getByRole('timer');
-      expect(timer).toHaveTextContent('03:30');
+      expect(timer).toHaveTextContent('00:00');
     });
 
     it('renders all control buttons', () => {
@@ -72,6 +72,18 @@ describe('PomodoroTimer', () => {
     it('counts down when running', async () => {
       renderWithChakra(<PomodoroTimer />);
       const user = userEvent.setup({ delay: null });
+      
+      // Set custom time to 5 seconds first
+      const minutesInput = screen.getByLabelText('Minutes input');
+      const secondsInput = screen.getByLabelText('Seconds input');
+      const updateButton = screen.getByRole('button', { name: /update/i });
+      
+      await act(async () => {
+        fireEvent.change(minutesInput, { target: { value: '0' } });
+        fireEvent.change(secondsInput, { target: { value: '5' } });
+        fireEvent.click(updateButton);
+      });
+
       const startButton = screen.getByRole('button', { name: /start/i });
       
       await user.click(startButton);
@@ -80,7 +92,7 @@ describe('PomodoroTimer', () => {
       });
 
       const timer = screen.getByRole('timer');
-      expect(timer).toHaveTextContent('03:29');
+      expect(timer).toHaveTextContent('00:04');
     });
 
     it('resets timer when Reset button is clicked', async () => {
@@ -99,7 +111,7 @@ describe('PomodoroTimer', () => {
       await user.click(resetButton);
 
       const timer = screen.getByRole('timer');
-      expect(timer).toHaveTextContent('03:30');
+      expect(timer).toHaveTextContent('00:00');
     });
   });
 
@@ -226,6 +238,18 @@ describe('PomodoroTimer', () => {
     it('shows countdown notifications at appropriate thresholds', async () => {
       renderWithChakra(<PomodoroTimer />);
       const user = userEvent.setup({ delay: null });
+      
+      // Set custom time to 15 seconds first
+      const minutesInput = screen.getByLabelText('Minutes input');
+      const secondsInput = screen.getByLabelText('Seconds input');
+      const updateButton = screen.getByRole('button', { name: /update/i });
+      
+      await act(async () => {
+        fireEvent.change(minutesInput, { target: { value: '0' } });
+        fireEvent.change(secondsInput, { target: { value: '15' } });
+        fireEvent.click(updateButton);
+      });
+
       const startButton = screen.getByRole('button', { name: /start/i });
       
       // Start timer
@@ -236,8 +260,7 @@ describe('PomodoroTimer', () => {
 
       // Advance to 10 seconds remaining
       await act(async () => {
-        // Initial state is 3:30 (210 seconds), advance to 0:10 (10 seconds)
-        jest.advanceTimersByTime(200000); // 200 seconds
+        jest.advanceTimersByTime(5000); // 5 seconds, so 10 remain
         await Promise.resolve();
         await Promise.resolve();
       });
@@ -267,13 +290,29 @@ describe('PomodoroTimer', () => {
     it('shows completion notification when timer ends', async () => {
       renderWithChakra(<PomodoroTimer />);
       const user = userEvent.setup({ delay: null });
+      
+      // Set custom time to 5 seconds first to avoid the 3-second countdown notification
+      const minutesInput = screen.getByLabelText('Minutes input');
+      const secondsInput = screen.getByLabelText('Seconds input');
+      const updateButton = screen.getByRole('button', { name: /update/i });
+      
+      await act(async () => {
+        fireEvent.change(minutesInput, { target: { value: '0' } });
+        fireEvent.change(secondsInput, { target: { value: '5' } });
+        fireEvent.click(updateButton);
+      });
+
       const startButton = screen.getByRole('button', { name: /start/i });
       
       // Start timer and advance to completion
       await user.click(startButton);
-      await advanceTimer(210);
+      
+      // Clear any countdown notifications first
+      mockToast.mockClear();
+      
+      await advanceTimer(5);
 
-      // Verify toast was called
+      // Verify completion toast was called (should be the last call)
       expect(mockToast).toHaveBeenCalledWith(
         expect.objectContaining({
           position: 'top',

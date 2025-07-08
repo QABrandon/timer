@@ -11,10 +11,10 @@ import {
 } from '@chakra-ui/react';
 
 const PomodoroTimer = () => {
-  const [minutes, setMinutes] = useState(3);
-  const [seconds, setSeconds] = useState(30);
-  const [customMinutes, setCustomMinutes] = useState(3);
-  const [customSeconds, setCustomSeconds] = useState(30);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+  const [customMinutes, setCustomMinutes] = useState(0);
+  const [customSeconds, setCustomSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   
   const toast = useToast();
@@ -93,14 +93,6 @@ const PomodoroTimer = () => {
   useEffect(() => {
     if (!isRunning) return;
 
-    const totalSeconds = minutes * 60 + seconds;
-    
-    // Handle timer completion
-    if (totalSeconds === 0) {
-      handleTimerComplete();
-      return;
-    }
-
     const tick = () => {
       setSeconds(prevSeconds => {
         if (prevSeconds === 0) {
@@ -124,7 +116,7 @@ const PomodoroTimer = () => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isRunning, minutes, seconds, handleTimerComplete]);
+  }, [isRunning, handleTimerComplete]);
 
   // Separate effect for notifications
   useEffect(() => {
