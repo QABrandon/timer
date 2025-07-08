@@ -293,7 +293,7 @@ describe('PomodoroTimer', () => {
       expect(mockToast).toHaveBeenCalled();
     });
 
-    it('shows completion notification when timer ends', async () => {
+    it('shows completion notification when timer ends and resets to custom time', async () => {
       renderWithChakra(<PomodoroTimer />);
       const user = userEvent.setup({ delay: null });
       
@@ -318,7 +318,7 @@ describe('PomodoroTimer', () => {
       
       await advanceTimer(5);
 
-      // Verify completion toast was called (should be the last call)
+      // Verify completion toast was called
       expect(mockToast).toHaveBeenCalledWith(
         expect.objectContaining({
           position: 'top',
@@ -326,6 +326,10 @@ describe('PomodoroTimer', () => {
           isClosable: true
         })
       );
+
+      // Verify timer has reset to custom time (00:05)
+      const timer = screen.getByRole('timer');
+      expect(timer).toHaveTextContent('00:05');
     });
   });
 }); 

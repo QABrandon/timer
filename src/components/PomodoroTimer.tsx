@@ -62,6 +62,10 @@ const PomodoroTimer = () => {
     setIsRunning(false);
     lastAnnouncedSecond.current = null;
     
+    // Reset timer to custom values for easy restart
+    setMinutes(customMinutes);
+    setSeconds(customSeconds);
+    
     // Final notification
     toast({
       position: 'top',
@@ -87,7 +91,7 @@ const PomodoroTimer = () => {
     if (ariaLiveRef.current) {
       ariaLiveRef.current.textContent = 'Timer complete!';
     }
-  }, [toast]);
+  }, [toast, customMinutes, customSeconds]);
 
   // Effect for timer countdown
   useEffect(() => {
