@@ -16,7 +16,6 @@ const PomodoroTimer = () => {
   const [customMinutes, setCustomMinutes] = useState(3);
   const [customSeconds, setCustomSeconds] = useState(30);
   const [isRunning, setIsRunning] = useState(false);
-  const [isCountingDown, setIsCountingDown] = useState(false);
   
   const toast = useToast();
   const intervalRef = useRef<number | null>(null);
@@ -61,7 +60,6 @@ const PomodoroTimer = () => {
 
   const handleTimerComplete = useCallback(() => {
     setIsRunning(false);
-    setIsCountingDown(false);
     lastAnnouncedSecond.current = null;
     
     // Final notification
@@ -152,7 +150,6 @@ const PomodoroTimer = () => {
     setMinutes(customMinutes);
     setSeconds(customSeconds);
     setIsRunning(false);
-    setIsCountingDown(false);
     lastAnnouncedSecond.current = null;
   };
 
@@ -163,7 +160,6 @@ const PomodoroTimer = () => {
     setMinutes(customMinutes);
     setSeconds(customSeconds);
     setIsRunning(false);
-    setIsCountingDown(false);
     lastAnnouncedSecond.current = null;
   };
 
