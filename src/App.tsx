@@ -3,16 +3,39 @@ import PomodoroTimer from './components/PomodoroTimer'
 
 const theme = extendTheme({
   fonts: {
-    heading: 'Roboto, sans-serif',
-    body: 'Roboto, sans-serif',
+    heading: '"Roboto", system-ui, -apple-system, sans-serif',
+    body: '"Roboto", system-ui, -apple-system, sans-serif',
+  },
+  styles: {
+    global: {
+      body: {
+        bg: 'gray.50',
+      },
+    },
   },
 })
 
 function App() {
   return (
     <ChakraProvider theme={theme}>
-      <Container maxW="container.md" centerContent py={8}>
-        <Stack direction="column" gap={8} w="100%">
+      <Container 
+        maxW="container.md" 
+        centerContent 
+        py={8}
+        minH="100vh"
+        display="flex"
+        alignItems="center"
+      >
+        <Stack 
+          direction="column" 
+          spacing={8} 
+          w="100%" 
+          align="center"
+          bg="white"
+          p={8}
+          borderRadius="xl"
+          boxShadow="lg"
+        >
           <PomodoroTimer />
         </Stack>
       </Container>

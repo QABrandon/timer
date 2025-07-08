@@ -1,16 +1,14 @@
 import '@testing-library/jest-dom';
 
-// Enable fake timers globally
-jest.useFakeTimers();
-
-// Setup test environment
+// Configure test environment
 beforeEach(() => {
-  // Clear all mocks and timers before each test
+  // Enable fake timers and clear any previous state
+  jest.useFakeTimers();
   jest.clearAllMocks();
   jest.clearAllTimers();
 });
 
 afterEach(() => {
-  // Cleanup after each test
-  jest.clearAllTimers();
+  // Reset timers to real timers and cleanup
+  jest.useRealTimers();
 }); 
