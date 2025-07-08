@@ -95,17 +95,34 @@ const PomodoroTimer = () => {
 
     const tick = () => {
       setSeconds(prevSeconds => {
-        if (prevSeconds === 0) {
+        const newSeconds = prevSeconds - 1;
+        
+        if (newSeconds < 0) {
           setMinutes(prevMinutes => {
-            if (prevMinutes === 0) {
+            const newMinutes = prevMinutes - 1;
+            if (newMinutes < 0) {
+              // Timer has completed
               handleTimerComplete();
               return 0;
             }
-            return prevMinutes - 1;
+            return newMinutes;
           });
           return 59;
         }
-        return prevSeconds - 1;
+        
+        // Check if this will be the final countdown (0:00)
+        if (newSeconds === 0) {
+          setMinutes(prevMinutes => {
+            if (prevMinutes === 0) {
+              // Next tick would make it 0:00, so complete now
+              handleTimerComplete();
+              return 0;
+            }
+            return prevMinutes;
+          });
+        }
+        
+        return newSeconds;
       });
     };
 
@@ -124,9 +141,14 @@ const PomodoroTimer = () => {
 
     const totalSeconds = minutes * 60 + seconds;
     const isShortTimer = totalSeconds < 60;
-    const countdownThreshold = isShortTimer ? 3 : 10;
+    
+    // For short timers (< 60 seconds), notify at 3, 2, 1 seconds
+    // For longer timers, notify at 10 seconds
+    const shouldNotify = isShortTimer 
+      ? (totalSeconds <= 3 && totalSeconds > 0)
+      : (totalSeconds === 10);
 
-    if (totalSeconds === countdownThreshold) {
+    if (shouldNotify) {
       announceTimeLeft(totalSeconds);
     }
   }, [isRunning, minutes, seconds, announceTimeLeft]);

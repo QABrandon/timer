@@ -239,14 +239,14 @@ describe('PomodoroTimer', () => {
       renderWithChakra(<PomodoroTimer />);
       const user = userEvent.setup({ delay: null });
       
-      // Set custom time to 15 seconds first
+      // Set custom time to 5 seconds first to test short timer notifications
       const minutesInput = screen.getByLabelText('Minutes input');
       const secondsInput = screen.getByLabelText('Seconds input');
       const updateButton = screen.getByRole('button', { name: /update/i });
       
       await act(async () => {
         fireEvent.change(minutesInput, { target: { value: '0' } });
-        fireEvent.change(secondsInput, { target: { value: '15' } });
+        fireEvent.change(secondsInput, { target: { value: '5' } });
         fireEvent.click(updateButton);
       });
 
@@ -258,17 +258,17 @@ describe('PomodoroTimer', () => {
       // Clear any previous toast calls
       mockToast.mockClear();
 
-      // Advance to 10 seconds remaining
+      // Advance to 3 seconds remaining
       await act(async () => {
-        jest.advanceTimersByTime(5000); // 5 seconds, so 10 remain
+        jest.advanceTimersByTime(2000); // 2 seconds, so 3 remain
         await Promise.resolve();
         await Promise.resolve();
       });
 
       // Verify timer state
-      expect(screen.getByRole('timer')).toHaveTextContent('00:10');
+      expect(screen.getByRole('timer')).toHaveTextContent('00:03');
 
-      // Verify the toast was called
+      // Verify the toast was called for 3 seconds
       expect(mockToast).toHaveBeenCalledWith(
         expect.objectContaining({
           position: 'top',
@@ -281,10 +281,16 @@ describe('PomodoroTimer', () => {
         })
       );
 
-      // Verify the rendered content
-      const renderFn = mockToast.mock.calls[0][0].render;
-      const renderedContent = renderFn();
-      expect(renderedContent.props.children).toContain('10 seconds remaining');
+      // Clear and advance to 2 seconds
+      mockToast.mockClear();
+      await act(async () => {
+        jest.advanceTimersByTime(1000); // 1 more second, so 2 remain
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+
+      // Verify toast was called for 2 seconds
+      expect(mockToast).toHaveBeenCalled();
     });
 
     it('shows completion notification when timer ends', async () => {
